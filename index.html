@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      html,
+      body {
+        font-family: sans-serif;
+        overflow: hidden;
+        background: #f8f9fa;
+        text-align: center;
+      }
+      #frame {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+        border: 0;
+        pointer-events: auto;
+      }
+      #variations {
+        padding: 1em;
+        border-radius: 12px;
+        position: relative;
+        z-index: 2;
+        width: fit-content;
+        margin: 20px auto;
+        background: #fff;
+        border: 1px solid #ccc;
+      }
+      a {
+        color: #1a73e8;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.2em;
+        display: block;
+        margin: 10px 0;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div id="variations">
+      <h2>Select Bypass Vector:</h2>
+      <!-- PAKE RELATIVE PATH BIAR GAK KENA CORS ERROR KAYAK KEMAREN -->
+      <a href="?mode=jsprompt">1. JS Prompt Bypass</a>
+      <a href="?mode=jsalert">2. JS Alert Bypass</a>
+      <a href="?mode=basicauth">3. Basic Auth Bypass</a>
+    </div>
+    <p style="position: relative; z-index: 2; font-weight: bold">
+      Tap anywhere below after selecting
+    </p>
+
+    <iframe id="frame" allow="fullscreen *"></iframe>
+
+    <script>
+      var searchParams = new URLSearchParams(window.location.search);
+      var mode = searchParams.get("mode") || "jsprompt";
+
+      // PENTING: Pake URL relative biar langsung load file di folder Github lu
+      document.getElementById("frame").src =
+        "ligatures-perm-frame.html?mode=" + mode;
+    </script>
+  </body>
+</html>
